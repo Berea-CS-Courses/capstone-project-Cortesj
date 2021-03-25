@@ -8,6 +8,24 @@ March 24, 2021
 
 ## Proof of Concept
 
+![](https://raw.githubusercontent.com/Berea-CS-Courses/capstone-project-Cortesj/Deliverable-4/Deliverables/D4_Images/ROUGH_GUI.jpg)
+
+*Rough GUI with non-functional buttons and emmended graphs from example data*
+
+
+![](https://raw.githubusercontent.com/Berea-CS-Courses/capstone-project-Cortesj/Deliverable-4/Deliverables/D4_Images/DEV_ENVIORMENT.jpg)
+
+*View of Development enviorment with snapshot of WIP code*
+
+![](https://raw.githubusercontent.com/Berea-CS-Courses/capstone-project-Cortesj/Deliverable-4/Deliverables/D4_Images/ROUGH_STRUCTURE.jpg)
+
+*Extremely Rough outline of some files and their sturcture*
+
+![](https://raw.githubusercontent.com/Berea-CS-Courses/capstone-project-Cortesj/Deliverable-4/Deliverables/D4_Images/CSV_EXAMPLE.jpg)
+
+*View of dummy data CSV and I expect to have it formatted*
+
+---
 ## Concept Documentation
 
 1. *What external software or tools are needed to run your proof-of-concept?*

@@ -104,7 +104,7 @@ def main_window():
     settings.place(x=650, y=490)
 
     # Load CSV/Graphs | Needs to be Own Function
-    curr_data = pandas.read_csv("~/Documents/GitHub/capstone-project-Cortesj/code/demo_data.csv",
+    curr_data = pandas.read_csv("~/Documents/GitHub/capstone-project-Cortesj/code/data/demo_data.csv",
                                 delimiter=',',
                                 index_col=0,
                                 names=['Time', 'Temperature', 'Humidity']

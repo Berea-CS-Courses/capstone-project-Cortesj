@@ -2,9 +2,9 @@
     "interval": 600,
     "sql_login": {
         "username": "root",
-        "password": "password",
+        "password": "root",
         "host": "localhost",
         "port": "8080",
-        "database": "database"
+        "database": "inventory"
     }
 }

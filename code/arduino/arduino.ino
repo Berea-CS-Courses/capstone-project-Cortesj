@@ -1,56 +1,54 @@
 /*
- This example connects to an unencrypted WiFi network.
- Then it prints the MAC address of the WiFi module,
- the IP address obtained, and other network details.
+Arduino Code for Wifi Connection & Sensor Readout
 
- created 13 July 2010
- by dlf (Metodo2 srl)
- modified 31 May 2012
- by Tom Igoe
+Built with Arduino Nano 33 IoT & DHT22 Sensor
  */
+
+// Import Libraries
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include "DHT.h"
 
+// Import Settings for Wifi, etc...
 #include "settings.h"
-///////please enter your sensitive data in the Secret tab/arduino_secrets.h
+
+// Import WiFi Credentials from "Settings.h"
 char ssid[] = SECRET_SSID;        // your network SSID (name)
 char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
 int status = WL_IDLE_STATUS;     // the WiFi radio's status
 
-// Initialize DHTxx Sensor
+// Initialize DHTxx Sensor Class
 DHT dht(DHTPIN, DHTTYPE);
 
-// Initialization of Variables
+// Initialize Temperature & Humidity Data
 float humidityData;
 float temperatureData;
 
-// Declare Client | (WifiNINA Client)
+// Declare Connection Client | (WifiNINA Client)
 WiFiClient client;
 
-// PHP Server
-char server[] = "192.168.0.150"; // your Server IP | Ensure static DCHP
+// PHP Server Address
+char server[] = PHP_ADDRESS;
 
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
-  //while (!Serial) {
-  //  ; // wait for serial port to connect. Needed for native USB port only
-  //}
 
-  // check for the WiFi module:
+  // Check for WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed!");
     // don't continue
     while (true);
   }
 
-  dht.begin(); //Start Sensor
+  // Start Sensor Data Readings
+  dht.begin();
 
-  // attempt to connect to WiFi network:
+  // Attempt to connect to WiFi network:
   while (status != WL_CONNECTED) {
     Serial.print("Attempting to connect to WPA SSID: ");
     Serial.println(ssid);
+    
     // Connect to WPA/WPA2 network:
     status = WiFi.begin(ssid, pass);
 
@@ -58,25 +56,29 @@ void setup() {
     delay(10000);
   }
 
-  // you're connected now, so print out the data:
+  // Connection Successful, so print out the data:
   Serial.print("You're connected to the network");
   printCurrentNet();
   printWifiData();
-
 }
 
 void loop() {
-  // check the network connection once every 10 seconds:
+  // Delay main loop every 10 Seconds
   delay(10000);
+
+  // Functions to execute
   printCurrentNet();
   read_sensor();
   php_connect();
+  reconnect();
 }
 
 void read_sensor() {
+  // Read Sensor and save to variable
   humidityData = dht.readHumidity();
   temperatureData = dht.readTemperature(true);
 
+  // Print out to Serial for Debug
   Serial.print("Humidity Data: ");
   Serial.println(humidityData);
   Serial.print("Temperature Data: ");
@@ -84,19 +86,33 @@ void read_sensor() {
   Serial.println("");
 }
 
+void reconnect() {
+  // Check for Disconnect/Connection Lost status to reconnect WiFi
+  int status;
+  status = WiFi.status();
+
+  if (status == WL_DISCONNECTED || status == WL_CONNECTION_LOST){
+    while (status != WL_CONNECTED){
+      status = WiFi.begin(ssid, pass);
+      delay(10000);
+    }
+  }
+}
+
 void php_connect() {
+  // Connect client to PHP script on localhost
   if (client.connect(server, 80)){
     Serial.print("Connection Successful!");
-    Serial.print("");
+    Serial.println(" ");
     // HTTP Request
     Serial.print("GET /test/dht.php?humidity=");
     client.print("GET /test/dht.php?humidity=");     //YOUR URL
-    Serial.println(humidityData);
+    Serial.print(humidityData);
     client.print(humidityData);
     client.print("&temperature=");
-    Serial.println("&temperature=");
+    Serial.print("&temperature=");
     client.print(temperatureData);
-    Serial.println(temperatureData);
+    Serial.print(temperatureData);
     client.print(" ");      //SPACE BEFORE HTTP/1.1
     client.print("HTTP/1.1");
     client.println();

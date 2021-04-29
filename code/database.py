@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import errorcode
 import random # TEMP
+import pandas
 
 
 class Database:
@@ -26,9 +27,7 @@ class Database:
                 print("Database does not exist!")
             else:
                 print(err)
-        # Revisit/Remove
-        #finally:
-            #conn.close()
+
 
     def new_plant(self, name, desc="", stock=0, temp=0, hum=0):
         self.cur = self.conn.cursor()
@@ -41,7 +40,6 @@ class Database:
 
         self.conn.commit()
         self.cur.close()
-        #self.conn.close()
 
     def update_plant(self, id, name, desc="", stock=0, temp=0, hum=0):
         self.cur = self.conn.cursor()
@@ -56,13 +54,45 @@ class Database:
         
         self.conn.commit()
         self.cur.close()
-        #self.conn.close()
 
-    def find_plant(self):
-        pass
+    def view_plants(self):
+
+        query = pandas.read_sql_query(
+            '''
+            SELECT *
+            FROM plants_inventory
+            ''', self.conn, index_col='id'
+            )
+
+        df = pandas.DataFrame(query)
+
+    def find_plant(self, user_input=None):
+
+        if user_input.isdigit() is True:
+
+            query = pandas.read_sql_query(
+                '''
+                SELECT *
+                FROM plants_inventory
+                WHERE id=%s
+                ''' % (user_input), self.conn, index_col='id'
+            )
+        else:
+            query = pandas.read_sql_query(
+                '''
+                SELECT *
+                FROM plants_inventory
+                WHERE name='%s'
+                ''' % (user_input), self.conn, index_col='id'
+            )
+
+        df = pandas.DataFrame(query)
+
 
 
 test = Database(user='root', password='root', host='localhost', port='3306', database='inventory')
 test.connect()
-test.new_plant("test_plant", "test desc", random.randrange(0,1000), round(random.uniform(0,212), 2), round(random.uniform(0,100), 2))
-test.update_plant(2, "modified_plant", "lol desc", random.randrange(0,1000), round(random.uniform(0,212), 2), round(random.uniform(0,100), 2))
+test.find_plant("modified_plant")
+#test.view_plant()
+#test.new_plant("test_plant", "test desc", random.randrange(0,1000), round(random.uniform(0,212), 2), round(random.uniform(0,100), 2))
+#test.update_plant(2, "modified_plant", "lol desc", random.randrange(0,1000), round(random.uniform(0,212), 2), round(random.uniform(0,100), 2))

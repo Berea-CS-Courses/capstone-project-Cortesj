@@ -133,8 +133,47 @@ class User_Interface:
         # Screen Settings/Geometry
         win_create_entry = Toplevel(self.window)
         win_create_entry.title("Add Inventory Item")
-        win_create_entry.geometry('300x300')
-        win_create_entry.resizable(False, False)
+        win_create_entry.geometry('400x350')
+        win_create_entry.minsize(400, 350)
+        win_create_entry.maxsize(600, 350)
+        #win_create_entry.resizable(False, False)
+
+        win_create_entry.columnconfigure(0, weight=1)
+        win_create_entry.columnconfigure(1, weight=4)
+
+        name_label = Label(win_create_entry, text='Name')
+        name_label.grid(column=0, row=0, sticky="NESW")
+        name_entry = Entry(win_create_entry, bg='White', fg='Black')
+        name_entry.grid(column=1, row=0, sticky="EW")
+
+        desc_label = Label(win_create_entry, text='Description')
+        desc_label.grid(column=0, row=1)
+        desc_entry = Text(win_create_entry, height=10, width=10, bg='White', fg='Black')
+        desc_entry.grid(column=1, row=1, sticky='NESW')#, padx=10, pady=10, ipadx=20, ipady=30)
+        
+        stock_label = Label(win_create_entry, text='Stock')
+        stock_label.grid(column=0, row=2)
+        stock_entry = Entry(win_create_entry, bg='White', fg='Black', justify='center', width=5)
+        stock_entry.grid(column=1, row=2, sticky='W')
+
+        temp_label = Label(win_create_entry, text='Temperature')
+        temp_label.grid(column=0, row=3)
+        temp_entry = Entry(win_create_entry, bg='White', fg='Black', justify='center', width=5)
+        temp_entry.grid(column=1, row=3, sticky='W')
+
+        hum_label = Label(win_create_entry, text='Humidity')
+        hum_label.grid(column=0, row=4)
+        hum_entry = Entry(win_create_entry, bg='White', fg='Black', justify='center', width=5)
+        hum_entry.grid(column=1, row=4, sticky='W')
+
+        save_btn = Button(win_create_entry,
+                          text='Save',
+                          bd='2',
+                          bg='gray',
+                          command=win_create_entry.destroy,
+                          )
+        save_btn.grid(row=5, columnspan=2, sticky="NESW")
+
 
     def edit_entry(self):
         # Screen Settings/Geometry
@@ -147,8 +186,9 @@ class User_Interface:
         # Screen Settings/Geometry
         win_view = Toplevel(self.window)
         win_view.title("View Inventory")
-        win_view.geometry('300x300')
-        win_view.resizable(False, False)
+        win_view.geometry('600x500')
+        win_view.minsize(600, 700)
+        win_view.maxsize(3000, 3000)
 
     def current_report(self):
         # Screen Settings/Geometry

@@ -3,7 +3,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas
-
+from pandastable import Table
+import numpy as np
 
 class User_Interface:
     def __init__(self):
@@ -136,7 +137,6 @@ class User_Interface:
         win_create_entry.geometry('400x350')
         win_create_entry.minsize(400, 350)
         win_create_entry.maxsize(600, 350)
-        #win_create_entry.resizable(False, False)
 
         win_create_entry.columnconfigure(0, weight=1)
         win_create_entry.columnconfigure(1, weight=4)
@@ -189,6 +189,20 @@ class User_Interface:
         win_view.geometry('600x500')
         win_view.minsize(600, 700)
         win_view.maxsize(3000, 3000)
+
+        win_view.columnconfigure(0, weight=1)
+        win_view.columnconfigure(1, weight=4)
+
+        s_label = Label(win_view, text='Search')
+        s_label.grid(column=0, row=0)
+        s_entry = Entry(win_view, bg='white', fg='black')
+        s_entry.grid(column=1, row=0, sticky='NESW')
+
+        df = pandas.DataFrame(np.random.randint(0,100,size=(100, 4)), columns=list('ABCD')) # RANDOM DATA
+
+        table = Table(win_view, dataframe=df)
+        table.grid(column=0, row=4)#, columnspan=2, sticky='NESW')
+        table.show()
 
     def current_report(self):
         # Screen Settings/Geometry

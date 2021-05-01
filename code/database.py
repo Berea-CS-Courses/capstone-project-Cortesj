@@ -66,6 +66,8 @@ class Database:
 
         df = pandas.DataFrame(query)
 
+        print(df)
+
     def find_plant(self, user_input=None):
 
         if user_input.isdigit() is True:
@@ -88,11 +90,13 @@ class Database:
 
         df = pandas.DataFrame(query)
 
+        print(df) #REmove
+
 
 
 test = Database(user='root', password='root', host='localhost', port='3306', database='inventory')
 test.connect()
 test.find_plant("modified_plant")
-#test.view_plant()
+test.view_plants()
 #test.new_plant("test_plant", "test desc", random.randrange(0,1000), round(random.uniform(0,212), 2), round(random.uniform(0,100), 2))
 #test.update_plant(2, "modified_plant", "lol desc", random.randrange(0,1000), round(random.uniform(0,212), 2), round(random.uniform(0,100), 2))

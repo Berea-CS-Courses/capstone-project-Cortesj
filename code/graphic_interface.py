@@ -1,14 +1,27 @@
 from tkinter import *
+import tkinter as tk
+from tkinter.messagebox import askyesno
+from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas
-from pandastable import Table
 import numpy as np
+
+from database import *
+from config import *
+
 
 class User_Interface:
     def __init__(self):
-        pass
+        self.db_conn = Database(
+            user='root',
+            password='root',
+            host='localhost',
+            port='3306',
+            database='inventory'
+            )
+        self.db_conn.connect()
 
     def main_window(self):
         # Screen Settings/Geometry
@@ -33,77 +46,84 @@ class User_Interface:
         btn_x = 450
 
         # Inventory Buttons
-        inv_create = Button(self.window,
-                            text='Create Inventory Entry',
-                            bd='2',
-                            bg='gray',
-                            command=self.create_entry,
-                            height=btn_h,
-                            width=btn_w
-                            )
+        inv_create = Button(
+            self.window,
+            text='Create Inventory Entry',
+            bd='2',
+            bg='gray',
+            command=self.create_entry,
+            height=btn_h,
+            width=btn_w
+            )
         inv_create.place(x=btn_x, y=70)
 
-        inv_edit = Button(self.window,
-                          text='Edit/Delete Inventory Entry',
-                          bd='2',
-                          bg='gray',
-                          command=self.edit_entry,
-                          height=btn_h,
-                          width=btn_w
-                          )
+        inv_edit = Button(
+            self.window,
+            text='Edit/Delete Inventory Entry',
+            bd='2',
+            bg='gray',
+            command=self.edit_entry,
+            height=btn_h,
+            width=btn_w
+            )
         inv_edit.place(x=btn_x, y=140)
 
-        inv_view = Button(self.window,
-                          text='View Inventory',
-                          bd='2',
-                          bg='gray',
-                          command=self.view_inventory,
-                          height=btn_h,
-                          width=btn_w
-                          )
+        inv_view = Button(
+            self.window,
+            text='View Inventory',
+            bd='2',
+            bg='gray',
+            command=self.view_inventory,
+            height=btn_h,
+            width=btn_w
+            )
         inv_view.place(x=btn_x, y=210)
 
         # Report Buttons
-        report_current = Button(self.window,
-                                text='Current Report',
-                                bd='2',
-                                bg='gray',
-                                command=self.current_report,
-                                height=btn_h,
-                                width=btn_w
-                                )
+        report_current = Button(
+            self.window,
+            text='Current Report',
+            bd='2',
+            bg='gray',
+            command=self.current_report,
+            height=btn_h,
+            width=btn_w
+            )
         report_current.place(x=btn_x, y=280)
 
-        report_history = Button(self.window,
-                                text='Report History',
-                                bd='2',
-                                bg='gray',
-                                command=self.report_history,
-                                height=btn_h,
-                                width=btn_w
-                                )
+        report_history = Button(
+            self.window,
+            text='Report History',
+            bd='2',
+            bg='gray',
+            command=self.report_history,
+            height=btn_h,
+            width=btn_w
+            )
         report_history.place(x=btn_x, y=350)
 
-        report_critical = Button(self.window,
-                                 text='Critical Issues',
-                                 bd='2',
-                                 bg='gray',
-                                 command=self.critial_issues,
-                                 height=btn_h,
-                                 width=btn_w,
-                                 fg='red'
-                                 )
+        report_critical = Button(
+            self.window,
+            text='Critical Issues',
+            bd='2',
+            bg='gray',
+            command=self.critial_issues,
+            height=btn_h,
+            width=btn_w,
+            fg='red'
+            )
         report_critical.place(x=btn_x, y=420)
 
         # Settings Button
-        settings = Button(self.window,
-                          text='Settings',
-                          bd='2',
-                          bg='gray',
-                          command=self.settings,
-                          height=1,
-                          width=10
-                          )
+        settings = Button(
+            self.window,
+            text='Settings',
+            bd='2',
+            bg='gray',
+            command=self.settings,
+            height=1,
+            width=10
+            )
         settings.place(x=650, y=490)
 
         # Load CSV/Graphs | Needs to be Own Function
@@ -132,77 +152,223 @@ class User_Interface:
 
     def create_entry(self):
         # Screen Settings/Geometry
-        win_create_entry = Toplevel(self.window)
-        win_create_entry.title("Add Inventory Item")
-        win_create_entry.geometry('400x350')
-        win_create_entry.minsize(400, 350)
-        win_create_entry.maxsize(600, 350)
+        self.win_create_entry = Toplevel(self.window)
+        self.win_create_entry.title("Add Inventory Item")
+        self.win_create_entry.geometry('400x350')
+        self.win_create_entry.minsize(400, 350)
+        self.win_create_entry.maxsize(600, 350)
 
-        win_create_entry.columnconfigure(0, weight=1)
-        win_create_entry.columnconfigure(1, weight=4)
+        self.win_create_entry.columnconfigure(0, weight=1)
+        self.win_create_entry.columnconfigure(1, weight=4)
 
-        name_label = Label(win_create_entry, text='Name')
-        name_label.grid(column=0, row=0, sticky="NESW")
-        name_entry = Entry(win_create_entry, bg='White', fg='Black')
-        name_entry.grid(column=1, row=0, sticky="EW")
+        self.name_label = Label(self.win_create_entry, text='Name')
+        self.name_label.grid(column=0, row=0, sticky="NESW")
+        self.name_entry = Entry(self.win_create_entry, bg='White', fg='Black')
+        self.name_entry.grid(column=1, row=0, sticky="EW")
 
-        desc_label = Label(win_create_entry, text='Description')
-        desc_label.grid(column=0, row=1)
-        desc_entry = Text(win_create_entry, height=10, width=10, bg='White', fg='Black')
-        desc_entry.grid(column=1, row=1, sticky='NESW')#, padx=10, pady=10, ipadx=20, ipady=30)
+        self.desc_label = Label(self.win_create_entry, text='Description')
+        self.desc_label.grid(column=0, row=1)
+        self.desc_entry = Text(self.win_create_entry, height=10, width=10, bg='White', fg='Black')
+        self.desc_entry.grid(column=1, row=1, sticky='NESW')
         
-        stock_label = Label(win_create_entry, text='Stock')
-        stock_label.grid(column=0, row=2)
-        stock_entry = Entry(win_create_entry, bg='White', fg='Black', justify='center', width=5)
-        stock_entry.grid(column=1, row=2, sticky='W')
+        self.stock_label = Label(self.win_create_entry, text='Stock')
+        self.stock_label.grid(column=0, row=2)
+        self.stock_entry = Entry(self.win_create_entry, bg='White', fg='Black', justify='center', width=5)
+        self.stock_entry.grid(column=1, row=2, sticky='W')
 
-        temp_label = Label(win_create_entry, text='Temperature')
-        temp_label.grid(column=0, row=3)
-        temp_entry = Entry(win_create_entry, bg='White', fg='Black', justify='center', width=5)
-        temp_entry.grid(column=1, row=3, sticky='W')
+        self.temp_label = Label(self.win_create_entry, text='Temperature')
+        self.temp_label.grid(column=0, row=3)
+        self.temp_entry = Entry(self.win_create_entry, bg='White', fg='Black', justify='center', width=5)
+        self.temp_entry.grid(column=1, row=3, sticky='W')
 
-        hum_label = Label(win_create_entry, text='Humidity')
-        hum_label.grid(column=0, row=4)
-        hum_entry = Entry(win_create_entry, bg='White', fg='Black', justify='center', width=5)
-        hum_entry.grid(column=1, row=4, sticky='W')
+        self.hum_label = Label(self.win_create_entry, text='Humidity')
+        self.hum_label.grid(column=0, row=4)
+        self.hum_entry = Entry(self.win_create_entry, bg='White', fg='Black', justify='center', width=5)
+        self.hum_entry.grid(column=1, row=4, sticky='W')
 
-        save_btn = Button(win_create_entry,
-                          text='Save',
-                          bd='2',
-                          bg='gray',
-                          command=win_create_entry.destroy,
-                          )
-        save_btn.grid(row=5, columnspan=2, sticky="NESW")
+        self.save_btn = Button(
+            self.win_create_entry,
+            text='Save',
+            bd='2',
+            bg='gray',
+            command=self.create_btn,
+            )
+        self.save_btn.grid(row=5, columnspan=2, sticky="NESW")
+    
+    def create_btn(self):
+        self.db_conn.new_plant(
+            name=self.name_entry.get(),
+            desc=self.desc_entry.get('1.0', 'end-1c'),
+            stock=int(self.stock_entry.get()),
+            temp=float(self.temp_entry.get()),
+            hum=float(self.hum_entry.get())
+        )
+        self.win_create_entry.destroy()
 
-
-    def edit_entry(self):
+    def edit_entry(self, list_data):
+        self.id_store = list_data[0]
         # Screen Settings/Geometry
-        win_edit = Toplevel(self.window)
-        win_edit.title("Edit Inventory")
-        win_edit.geometry('300x300')
-        win_edit.resizable(False, False)
+        self.win_edit = Toplevel(self.window)
+        self.win_edit.title("Edit Inventory Item")
+        self.win_edit.geometry('400x360')
+        self.win_edit.minsize(400, 360)
+        self.win_edit.maxsize(600, 350)
+
+        self.win_edit.columnconfigure(0, weight=1)
+        self.win_edit.columnconfigure(1, weight=4)
+
+        self.id_label = Label(self.win_edit, text='ID')
+        self.id_label.grid(column=0, row=0, sticky="NESW")
+        self.id_entry = Label(self.win_edit, bg='White', fg='Black', text=str(list_data[0]))
+        self.id_entry.grid(column=1, row=0, sticky="EW")
+
+        self.name_label = Label(self.win_edit, text='Name')
+        self.name_label.grid(column=0, row=1, sticky="NESW")
+        self.name_entry = Entry(self.win_edit, bg='White', fg='Black')
+        self.name_entry.insert('0', list_data[1])
+        self.name_entry.grid(column=1, row=1, sticky="EW")
+
+        self.desc_label = Label(self.win_edit, text='Description')
+        self.desc_label.grid(column=0, row=2)
+        self.desc_entry = Text(self.win_edit, height=10, width=10, bg='White', fg='Black')
+        self.desc_entry.insert('1.0', list_data[2])
+        self.desc_entry.grid(column=1, row=2, sticky='NESW')
+        
+        self.stock_label = Label(self.win_edit, text='Stock')
+        self.stock_label.grid(column=0, row=3)
+        self.stock_entry = Entry(self.win_edit, bg='White', fg='Black', justify='center', width=5)
+        self.stock_entry.insert('0', list_data[3])
+        self.stock_entry.grid(column=1, row=3, sticky='W')
+
+        self.temp_label = Label(self.win_edit, text='Temperature')
+        self.temp_label.grid(column=0, row=4)
+        self.temp_entry = Entry(self.win_edit, bg='White', fg='Black', justify='center', width=5)
+        self.temp_entry.insert('0', list_data[4])
+        self.temp_entry.grid(column=1, row=4, sticky='W')
+
+        self.hum_label = Label(self.win_edit, text='Humidity')
+        self.hum_label.grid(column=0, row=5)
+        self.hum_entry = Entry(self.win_edit, bg='White', fg='Black', justify='center', width=5)
+        self.hum_entry.insert('0', list_data[5])
+        self.hum_entry.grid(column=1, row=5, sticky='W')
+
+        self.del_btn = Button(
+            self.win_edit,
+            text='Delete',
+            bd='2',
+            bg='red',
+            command=self.delete_btn,
+            )
+        self.del_btn.grid(row=6, column=0, sticky="NESW")
+
+        self.save_btn = Button(
+            self.win_edit,
+            text='Save',
+            bd='2',
+            bg='gray',
+            command=self.edit_btn,
+            )
+        self.save_btn.grid(row=6, column=1, sticky="NESW")
+
+    def edit_btn(self):
+        self.db_conn.update_plant(
+            id=int(self.id_store),
+            name=self.name_entry.get(),
+            desc=self.desc_entry.get('1.0', "end-1c"),
+            stock=int(self.stock_entry.get()),
+            temp=float(self.temp_entry.get()),
+            hum=float(self.hum_entry.get())
+        )
+
+        self.win_edit.destroy()
+        self.view_inv_refresh()
+
+    def delete_btn(self):
+        ans = tk.messagebox.askyesno(
+            title='Warning!',
+            message='Are you sure you wish to delete?',
+            icon='warning'
+            )
+
+        if ans == 'yes':
+            self.db_conn.del_plant(
+                id=self.id_store
+            )
+            self.win_edit.destroy()
+            self.view_inv_refresh()
+        else:
+            self.win_edit.destroy()
+            self.view_inv_refresh()
 
     def view_inventory(self):
         # Screen Settings/Geometry
-        win_view = Toplevel(self.window)
-        win_view.title("View Inventory")
-        win_view.geometry('600x500')
-        win_view.minsize(600, 700)
-        win_view.maxsize(3000, 3000)
+        self.win_view = Toplevel(self.window)
+        self.win_view.title("View Inventory")
+        self.win_view.geometry('1060x360')
+        self.win_view.resizable(False, False)
+        
+        self.columns = ('#1', '#2', '#3', '#4', '#5', '#6')
 
-        win_view.columnconfigure(0, weight=1)
-        win_view.columnconfigure(1, weight=4)
+        self.tree = ttk.Treeview(self.win_view, columns=self.columns, show='headings', height=15)
 
-        s_label = Label(win_view, text='Search')
-        s_label.grid(column=0, row=0)
-        s_entry = Entry(win_view, bg='white', fg='black')
-        s_entry.grid(column=1, row=0, sticky='NESW')
+        self.tree.heading('#1', text='ID')
+        self.tree.column('#1', minwidth=30, width=60, anchor='center')
+        self.tree.heading('#2', text='Name')
+        self.tree.column('#2', minwidth=50, width=200, anchor='center')
+        self.tree.heading('#3', text='DESC')
+        self.tree.column('#3', minwidth=100, width=600)
+        self.tree.heading('#4', text='Stock')
+        self.tree.column('#4', minwidth=30, width=60, anchor='center')
+        self.tree.heading('#5', text='Temp.')
+        self.tree.column('#5', minwidth=30, width=60, anchor='center')
+        self.tree.heading('#6', text='Humid.')
+        self.tree.column('#6', minwidth=30, width=60, anchor='center')
 
-        df = pandas.DataFrame(np.random.randint(0,100,size=(100, 4)), columns=list('ABCD')) # RANDOM DATA
+        self.df = self.db_conn.view_plants() # Grab current inventory
+        self.df_index = self.df.index.tolist()
 
-        table = Table(win_view, dataframe=df)
-        table.grid(column=0, row=4)#, columnspan=2, sticky='NESW')
-        table.show()
+        self.data = []
+        for n in self.df_index:
+            self.data.append([n] + self.df.loc[n].tolist())
+
+        # adding data to the treeview
+        for j in self.data:
+            self.tree.insert('', tk.END, values=j)
+
+        # bind the select event
+        def item_selected(event):
+            select_data = self.tree.selection()
+            select_data = self.tree.item(select_data)['values']
+            self.edit_entry(select_data)
+
+        self.tree.bind('<<TreeviewSelect>>', item_selected)
+
+        self.tree.grid(row=1, column=0, sticky='nsew')
+
+        # add a scrollbar
+        self.scrollbar = ttk.Scrollbar(self.win_view, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscroll=self.scrollbar.set)
+        self.scrollbar.grid(row=1, column=1, sticky='ns')
+
+        self.btn = tk.Button(self.win_view, text='Random')
+        self.btn.grid(row=0, sticky='nsew', columnspan=2)
+
+    def view_inv_refresh(self):
+        clean = self.tree.get_children()
+        if clean != '()':
+            for row in clean:
+                self.tree.delete(row)
+
+        self.df = self.db_conn.view_plants() # Grab current inventory
+        self.df_index = self.df.index.tolist()
+
+        self.data = []
+        for n in self.df_index:
+            self.data.append([n] + self.df.loc[n].tolist())
+
+        # adding data to the treeview
+        for j in self.data:
+            self.tree.insert('', tk.END, values=j)
 
     def current_report(self):
         # Screen Settings/Geometry

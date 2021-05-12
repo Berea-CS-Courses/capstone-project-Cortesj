@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import errorcode
 import pandas
+from pandas.core.frame import DataFrame
 
 
 class Database:
@@ -104,3 +105,31 @@ class Database:
             self.cur.close()
         except:
             self.conn.rollback()
+
+    def grab_sensor(self):
+        query_1 = pandas.read_sql_query(
+            '''
+            SELECT date, temperature, humidity
+            FROM sensor
+            WHERE week(date) = week(now())
+            ''',
+            self.conn,
+            index_col='date'
+        )
+
+        df1 = pandas.DataFrame(query_1)
+        print(df1)
+        return df1
+
+"""
+test = Database(
+    user='root',
+    password='root',
+    host='localhost',
+    port='3306',
+    database='test_db'
+)
+
+test.connect()
+test.grab_sensor()
+"""

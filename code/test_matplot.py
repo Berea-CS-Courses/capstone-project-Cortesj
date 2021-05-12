@@ -8,20 +8,31 @@ import matplotlib.pyplot as plt
 import pandas
 import numpy as np
 
+import matplotlib.animation as animation
+
 from database import *
 from config import *
 
 
 class User_Interface:
     def __init__(self):
-        self.db_conn = Database(
+        self.inv_conn = Database(
             user='root',
             password='root',
             host='localhost',
             port='3306',
             database='inventory'
             )
-        self.db_conn.connect()
+        self.inv_conn.connect()
+
+        self.sen_conn = Database(
+            user='root',
+            password='root',
+            host='localhost',
+            port='3306',
+            database='test_db'
+            )
+        self.sen_conn.connect()
 
     def main_window(self):
         # Screen Settings/Geometry
@@ -126,26 +137,31 @@ class User_Interface:
             )
         settings.place(x=650, y=490)
 
+        def ani(dump):
+            #new_rando = {'Temperature': np.random.randint(100), 'Humidity': np.random.randint(100)}
+            #print(self.curr_data)
+            #self.curr_data = self.curr_data.append(new_rando, ignore_index=True)
+            del self.curr_data
+            self.curr_data = self.sen_conn.grab_sensor()
+
+            self.curr_data.plot(legend=None, y='temperature', ax=self.ax1)            
+
         # Load CSV/Graphs | Needs to be Own Function
-        curr_data = pandas.read_csv("code/data/demo_data.csv",
-                                    delimiter=',',
-                                    index_col=0,
-                                    names=['Time', 'Temperature', 'Humidity']
-                                    )
+        #data = {'Temperature': [100, 200],
+        #        'Humidity': [34, 64]}
+        #self.curr_data = pandas.DataFrame(data)
+        self.curr_data = self.sen_conn.grab_sensor()
 
         # Graphic 1 | Temp
-        figure1 = plt.Figure(figsize=(4, 5), dpi=100)
-        ax1 = figure1.add_subplot(211)
+        self.figure1 = plt.Figure(figsize=(4, 5), dpi=100)
+        self.ax1 = self.figure1.add_subplot(211)
 
-        graphic_1 = FigureCanvasTkAgg(figure1, self.window)
+        graphic_1 = FigureCanvasTkAgg(self.figure1, self.window)
         graphic_1.get_tk_widget().place(x=30, y=15)
-        curr_data.plot(legend=True, y='Temperature', ax=ax1)
-        ax1.set_title('Current Temperature')
+        self.curr_data.plot(legend=None, y='temperature', ax=self.ax1)
+        self.ax1.set_title('Current Temperature')
 
-        # Graphic 2 | Humidity
-        ax2 = figure1.add_subplot(212)
-        curr_data.plot(legend=True, y='Humidity', ax=ax2)
-        ax2.set_title('Current Humidity')
+        ani = animation.FuncAnimation(self.figure1, func=ani, interval=5000)
 
         # Main Window Loop
         self.window.mainloop()
@@ -196,7 +212,7 @@ class User_Interface:
         self.save_btn.grid(row=5, columnspan=2, sticky="NESW")
     
     def create_btn(self):
-        self.db_conn.new_plant(
+        self.inv_conn.new_plant(
             name=self.name_entry.get(),
             desc=self.desc_entry.get('1.0', 'end-1c'),
             stock=int(self.stock_entry.get()),
@@ -271,7 +287,7 @@ class User_Interface:
         self.save_btn.grid(row=6, column=1, sticky="NESW")
 
     def edit_btn(self):
-        self.db_conn.update_plant(
+        self.inv_conn.update_plant(
             id=int(self.id_store),
             name=self.name_entry.get(),
             desc=self.desc_entry.get('1.0', "end-1c"),
@@ -291,7 +307,7 @@ class User_Interface:
             )
 
         if ans == 'yes':
-            self.db_conn.del_plant(
+            self.inv_conn.del_plant(
                 id=self.id_store
             )
             self.win_edit.destroy()
@@ -324,7 +340,7 @@ class User_Interface:
         self.tree.heading('#6', text='Humid.')
         self.tree.column('#6', minwidth=30, width=60, anchor='center')
 
-        self.df = self.db_conn.view_plants() # Grab current inventory
+        self.df = self.inv_conn.view_plants() # Grab current inventory
         self.df_index = self.df.index.tolist()
 
         self.data = []
@@ -359,7 +375,7 @@ class User_Interface:
             for row in clean:
                 self.tree.delete(row)
 
-        self.df = self.db_conn.view_plants() # Grab current inventory
+        self.df = self.inv_conn.view_plants() # Grab current inventory
         self.df_index = self.df.index.tolist()
 
         self.data = []
@@ -397,3 +413,7 @@ class User_Interface:
         win_config.title("Configuration")
         win_config.geometry('300x300')
         win_config.resizable(False, False)
+
+
+test = User_Interface()
+test.main_window()

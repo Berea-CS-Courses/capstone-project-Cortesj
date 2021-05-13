@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import errorcode
-import random # TEMP
+import pandas
+from pandas.core.frame import DataFrame
 
 
 class Database:
@@ -13,12 +14,13 @@ class Database:
 
     def connect(self):
         try:
-            self.conn = mysql.connector.connect(user=self.user,
-                                                password=self.user,
-                                                host=self.host,
-                                                database=self.database
-                                                )
-            print("Connection Success!") # Test Line
+            self.conn = mysql.connector.connect(
+                user=self.user,
+                password=self.user,
+                host=self.host,
+                database=self.database
+                )
+            print("Connection Success!")
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Username/Password could not Authenticate!")
@@ -26,9 +28,6 @@ class Database:
                 print("Database does not exist!")
             else:
                 print(err)
-        # Revisit/Remove
-        #finally:
-            #conn.close()
 
     def new_plant(self, name, desc="", stock=0, temp=0, hum=0):
         self.cur = self.conn.cursor()
@@ -41,7 +40,6 @@ class Database:
 
         self.conn.commit()
         self.cur.close()
-        #self.conn.close()
 
     def update_plant(self, id, name, desc="", stock=0, temp=0, hum=0):
         self.cur = self.conn.cursor()
@@ -53,16 +51,90 @@ class Database:
         plant_data = (name, desc, stock, temp, hum, id)
 
         self.cur.execute(update_old, plant_data)
-        
         self.conn.commit()
         self.cur.close()
-        #self.conn.close()
 
-    def find_plant(self):
-        pass
+    def view_plants(self):
+
+        query = pandas.read_sql_query(
+            '''
+            SELECT *
+            FROM plants_inventory
+            ''', self.conn, index_col='id'
+            )
+
+        df = pandas.DataFrame(query)
+
+        return df
+
+        print(df)
+        print(df.index.to_list())
+
+    def find_plant(self, user_input=None):
+
+        if user_input.isdigit() is True:
+
+            query = pandas.read_sql_query(
+                '''
+                SELECT *
+                FROM plants_inventory
+                WHERE id=%s
+                ''' % (user_input), self.conn, index_col='id'
+            )
+        else:
+            query = pandas.read_sql_query(
+                '''
+                SELECT *
+                FROM plants_inventory
+                WHERE name='%s'
+                ''' % (user_input), self.conn, index_col='id'
+            )
+
+        df = pandas.DataFrame(query)
+
+        print(df)
+
+    def del_plant(self, id=None):
+        self.cur = self.conn.cursor()
+        
+        sql_query = "DELETE FROM plants_inventory WHERE id=%s" % (id)
+
+        try:
+            self.cur.execute(sql_query)
+            self.conn.commit()
+            self.cur.close()
+        except:
+            self.conn.rollback()
+
+    def grab_sensor(self):
+        try:
+            query = pandas.read_sql_query(
+                '''
+                SELECT date, temperature, humidity
+                FROM sensor
+                WHERE week(date) = week(now())
+                ''',
+                self.conn,
+                index_col='date'
+            )
+
+            df = pandas.DataFrame(query)
+            df.index.name = None
+
+            return df
+        except Exception as e:
+            print("ERROR")
 
 
-test = Database(user='root', password='root', host='localhost', port='3306', database='inventory')
+"""
+test = Database(
+    user='root',
+    password='root',
+    host='localhost',
+    port='3306',
+    database='test_db'
+)
+
 test.connect()
-test.new_plant("test_plant", "test desc", random.randrange(0,1000), round(random.uniform(0,212), 2), round(random.uniform(0,100), 2))
-test.update_plant(2, "modified_plant", "lol desc", random.randrange(0,1000), round(random.uniform(0,212), 2), round(random.uniform(0,100), 2))
+test.grab_sensor()
+"""

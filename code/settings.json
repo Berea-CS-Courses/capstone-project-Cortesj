@@ -1,10 +1,11 @@
 {
-    "interval": 600,
+    "interval": 1000,
     "sql_login": {
         "username": "root",
         "password": "root",
         "host": "localhost",
-        "port": "8080",
-        "database": "inventory"
+        "port": "3306",
+        "inventory_db": "inventory",
+        "sensor_db": "test_db"
     }
 }

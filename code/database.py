@@ -107,19 +107,24 @@ class Database:
             self.conn.rollback()
 
     def grab_sensor(self):
-        query_1 = pandas.read_sql_query(
-            '''
-            SELECT date, temperature, humidity
-            FROM sensor
-            WHERE week(date) = week(now())
-            ''',
-            self.conn,
-            index_col='date'
-        )
+        try:
+            query = pandas.read_sql_query(
+                '''
+                SELECT date, temperature, humidity
+                FROM sensor
+                WHERE week(date) = week(now())
+                ''',
+                self.conn,
+                index_col='date'
+            )
 
-        df1 = pandas.DataFrame(query_1)
-        print(df1)
-        return df1
+            df = pandas.DataFrame(query)
+            df.index.name = None
+
+            return df
+        except Exception as e:
+            print("ERROR")
+
 
 """
 test = Database(

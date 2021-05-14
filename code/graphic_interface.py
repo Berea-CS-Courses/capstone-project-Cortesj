@@ -523,8 +523,20 @@ class User_Interface:
         self.scrollbar.grid(row=1, column=1, sticky='ns')
 
         # Current Placeholder Button
-        self.btn = tk.Button(self.win_view, text='Random')
-        self.btn.grid(row=0, sticky='nsew', columnspan=2)
+        self.search_ent = tk.Entry(
+            self.win_view,
+            bg='White',
+            fg='black'
+            )
+        self.search_ent.grid(row=0, sticky='nsew', columnspan=2)
+
+        def check(event):
+            if self.search_ent.get() == '':
+                print('Nothing Here')
+            else:
+                print(self.search_ent.get())
+
+        self.search_ent.bind("<KeyRelease>", check)
 
     def view_inv_refresh(self):
         """

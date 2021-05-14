@@ -1,5 +1,6 @@
 import time
 import graphic_interface
+import threading
 
 
 def main():

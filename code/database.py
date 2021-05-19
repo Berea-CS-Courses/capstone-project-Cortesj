@@ -45,7 +45,7 @@ class Database:
             else:
                 print(err)
 
-    def new_plant(self, name, desc="", stock=0, temp=0, hum=0):
+    def new_plant(self, name, desc="", stock=0, temp_min=0, temp_max=0, hum_min=0, hum_max=0):
         """
         Function that sents a Query to DB to create new Plant
         entry with appropriate parameters.
@@ -59,16 +59,16 @@ class Database:
         """
         self.cur = self.conn.cursor()
         add_plant = ("INSERT INTO plants_inventory "
-                     "(name, description, stock, temp, hum) "
-                     "VALUES (%s, %s, %s, %s, %s)")
-        plant_data = (name, desc, stock, temp, hum)
+                     "(name, description, stock, temp_min, temp_max, hum_min, hum_max) "
+                     "VALUES (%s, %s, %s, %s, %s, %s, %s)")
+        plant_data = (name, desc, stock, temp_min, temp_max, hum_min, hum_max)
 
         self.cur.execute(add_plant, plant_data)
 
         self.conn.commit()
         self.cur.close()
 
-    def update_plant(self, id, name, desc="", stock=0, temp=0, hum=0):
+    def update_plant(self, id, name, desc="", stock=0, temp_min=0, temp_max=0, hum_min=0, hum_max=0):
         """
         Function to make a Query to DB that update a specific
         plant via ID
@@ -81,17 +81,20 @@ class Database:
             temp (int, optional): [description]. Defaults to 0.
             hum (int, optional): [description]. Defaults to 0.
         """
-        self.cur = self.conn.cursor()
-        update_old = (
-            "UPDATE plants_inventory "
-            "SET name =%s, description=%s, stock=%s, temp=%s, hum=%s "
-            "WHERE id =%s"
-        )
-        plant_data = (name, desc, stock, temp, hum, id)
+        try:
+            self.cur = self.conn.cursor()
+            update_old = (
+                "UPDATE plants_inventory "
+                "SET name =%s, description=%s, stock=%s, temp_min=%s, temp_max=%s, hum_min=%s, hum_max=%s"
+                "WHERE id =%s"
+            )
+            plant_data = (name, desc, stock, temp_min, temp_max, hum_min, hum_max, id)
 
-        self.cur.execute(update_old, plant_data)
-        self.conn.commit()
-        self.cur.close()
+            self.cur.execute(update_old, plant_data)
+            self.conn.commit()
+            self.cur.close()
+        except Exception as e:
+            print("ERROR")
 
     def view_plants(self):
         """
@@ -150,7 +153,7 @@ class Database:
         self.cur = self.conn.cursor()
 
         sql_query = "DELETE FROM plants_inventory WHERE id=%s" % (id)
-
+        
         try:
             self.cur.execute(sql_query)
             self.conn.commit()

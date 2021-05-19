@@ -222,10 +222,10 @@ class User_Interface:
         # Screen Settings/Geometry
         self.win_create_entry = Toplevel(self.window)
         self.win_create_entry.title("Add Inventory Item")
-        self.win_create_entry.geometry('400x350')
+        self.win_create_entry.geometry('400x385')
         self.win_create_entry.iconphoto(False, self.icon)
-        self.win_create_entry.minsize(400, 350)
-        self.win_create_entry.maxsize(600, 350)
+        self.win_create_entry.minsize(400, 385)
+        self.win_create_entry.maxsize(600, 385)
         self.win_create_entry.columnconfigure(0, weight=1)
         self.win_create_entry.columnconfigure(1, weight=4)
 
@@ -261,7 +261,7 @@ class User_Interface:
             )
         self.stock_entry.grid(column=1, row=2, sticky='W')
 
-        self.temp_label = Label(self.win_create_entry, text='Temperature')
+        self.temp_label = Label(self.win_create_entry, text='Temperature (Min)')
         self.temp_label.grid(column=0, row=3)
         self.temp_entry = Entry(
             self.win_create_entry,
@@ -271,9 +271,20 @@ class User_Interface:
             width=5
             )
         self.temp_entry.grid(column=1, row=3, sticky='W')
+        
+        self.temp_label_2 = Label(self.win_create_entry, text='Temperature (Max)')
+        self.temp_label_2.grid(column=0, row=4)
+        self.temp_entry_2 = Entry(
+            self.win_create_entry,
+            bg='White',
+            fg='Black',
+            justify='center',
+            width=5
+            )
+        self.temp_entry_2.grid(column=1, row=4, sticky='W')
 
-        self.hum_label = Label(self.win_create_entry, text='Humidity')
-        self.hum_label.grid(column=0, row=4)
+        self.hum_label = Label(self.win_create_entry, text='Humidity (Min)')
+        self.hum_label.grid(column=0, row=5)
         self.hum_entry = Entry(
             self.win_create_entry,
             bg='White',
@@ -281,7 +292,18 @@ class User_Interface:
             justify='center',
             width=5
             )
-        self.hum_entry.grid(column=1, row=4, sticky='W')
+        self.hum_entry.grid(column=1, row=5, sticky='W')
+
+        self.hum_label_2 = Label(self.win_create_entry, text='Humidity (Max)')
+        self.hum_label_2.grid(column=0, row=6)
+        self.hum_entry_2 = Entry(
+            self.win_create_entry,
+            bg='White',
+            fg='Black',
+            justify='center',
+            width=5
+            )
+        self.hum_entry_2.grid(column=1, row=6, sticky='W')
 
         # Save Button & it's tie-in Function
         self.save_btn = Button(
@@ -291,7 +313,7 @@ class User_Interface:
             bg='gray',
             command=self.create_inv_btn,
             )
-        self.save_btn.grid(row=5, columnspan=2, sticky="NESW")
+        self.save_btn.grid(row=7, columnspan=2, sticky="NESW")
 
     def create_inv_btn(self):
         """
@@ -302,8 +324,10 @@ class User_Interface:
             name=self.name_entry.get(),
             desc=self.desc_entry.get('1.0', 'end-1c'),
             stock=int(self.stock_entry.get()),
-            temp=float(self.temp_entry.get()),
-            hum=float(self.hum_entry.get())
+            temp_min=float(self.temp_entry.get()),
+            temp_max=float(self.temp_entry_2.get()),
+            hum_min=float(self.hum_entry.get()),
+            hum_max=float(self.hum_entry_2.get())
         )
         self.win_create_entry.destroy()
 
@@ -322,10 +346,10 @@ class User_Interface:
         # Screen Settings/Geometry
         self.win_edit = Toplevel(self.window)
         self.win_edit.title("Edit Inventory Item")
-        self.win_edit.geometry('400x360')
+        self.win_edit.geometry('600x410')
         self.win_edit.iconphoto(False, self.icon)
-        self.win_edit.minsize(400, 360)
-        self.win_edit.maxsize(600, 350)
+        self.win_edit.minsize(400, 410)
+        self.win_edit.maxsize(800, 410)
 
         self.win_edit.columnconfigure(0, weight=1)
         self.win_edit.columnconfigure(1, weight=4)
@@ -335,7 +359,7 @@ class User_Interface:
         self.id_entry = Label(
             self.win_edit,
             bg='White', fg='Black',
-            text=str(list_data[0])
+            text=str(self.id_store)
             )
         self.id_entry.grid(column=1, row=0, sticky="EW")
 
@@ -373,7 +397,7 @@ class User_Interface:
         self.stock_entry.insert('0', list_data[3])
         self.stock_entry.grid(column=1, row=3, sticky='W')
 
-        self.temp_label = Label(self.win_edit, text='Temperature')
+        self.temp_label = Label(self.win_edit, text='Temperature (Min)')
         self.temp_label.grid(column=0, row=4)
         self.temp_entry = Entry(
             self.win_edit,
@@ -385,8 +409,20 @@ class User_Interface:
         self.temp_entry.insert('0', list_data[4])
         self.temp_entry.grid(column=1, row=4, sticky='W')
 
-        self.hum_label = Label(self.win_edit, text='Humidity')
-        self.hum_label.grid(column=0, row=5)
+        self.temp_label_2 = Label(self.win_edit, text='Temperature (Max)')
+        self.temp_label_2.grid(column=0, row=5)
+        self.temp_entry_2 = Entry(
+            self.win_edit,
+            bg='White',
+            fg='Black',
+            justify='center',
+            width=5
+            )
+        self.temp_entry_2.insert('0', list_data[5])
+        self.temp_entry_2.grid(column=1, row=5, sticky='W')
+
+        self.hum_label = Label(self.win_edit, text='Humidity (Min)')
+        self.hum_label.grid(column=0, row=6)
         self.hum_entry = Entry(
             self.win_edit,
             bg='White',
@@ -394,8 +430,20 @@ class User_Interface:
             justify='center',
             width=5
             )
-        self.hum_entry.insert('0', list_data[5])
-        self.hum_entry.grid(column=1, row=5, sticky='W')
+        self.hum_entry.insert('0', list_data[6])
+        self.hum_entry.grid(column=1, row=6, sticky='W')
+
+        self.hum_label_2 = Label(self.win_edit, text='Humidity (Max)')
+        self.hum_label_2.grid(column=0, row=7)
+        self.hum_entry_2 = Entry(
+            self.win_edit,
+            bg='White',
+            fg='Black',
+            justify='center',
+            width=5
+            )
+        self.hum_entry_2.insert('0', list_data[7])
+        self.hum_entry_2.grid(column=1, row=7, sticky='W')
 
         # Delete & Save Buttons
         self.del_btn = Button(
@@ -405,7 +453,7 @@ class User_Interface:
             bg='red',
             command=self.delete_btn,
         )
-        self.del_btn.grid(row=6, column=0, sticky="NESW")
+        self.del_btn.grid(row=8, column=0, sticky="NESW")
 
         self.save_btn = Button(
             self.win_edit,
@@ -414,7 +462,7 @@ class User_Interface:
             bg='gray',
             command=self.edit_btn,
         )
-        self.save_btn.grid(row=6, column=1, sticky="NESW")
+        self.save_btn.grid(row=8, column=1, sticky="NESW")
 
     def edit_btn(self):
         """
@@ -426,8 +474,10 @@ class User_Interface:
             name=self.name_entry.get(),
             desc=self.desc_entry.get('1.0', "end-1c"),
             stock=int(self.stock_entry.get()),
-            temp=float(self.temp_entry.get()),
-            hum=float(self.hum_entry.get())
+            temp_min=float(self.temp_entry.get()),
+            temp_max=float(self.temp_entry_2.get()),
+            hum_min=float(self.hum_entry.get()),
+            hum_max=float(self.hum_entry_2.get())
         )
 
         # Destory Window instant and Update Tabular view
@@ -445,7 +495,7 @@ class User_Interface:
             icon='warning'
             )
 
-        if ans == 'yes':
+        if ans is True:
             self.inv_conn.del_plant(
                 id=self.id_store
             )
@@ -463,11 +513,11 @@ class User_Interface:
         # Screen Settings/Geometry
         self.win_view = Toplevel(self.window)
         self.win_view.title("View Inventory")
-        self.win_view.geometry('1060x360')
+        self.win_view.geometry('1290x360')
         self.win_view.iconphoto(False, self.icon)
         self.win_view.resizable(False, False)
 
-        self.columns = ('#1', '#2', '#3', '#4', '#5', '#6')
+        self.columns = ('#1', '#2', '#3', '#4', '#5', '#6', '#7', '#8')
 
         # Decalre Tree Object/Widget
         self.tree = ttk.Treeview(
@@ -485,11 +535,15 @@ class User_Interface:
         self.tree.heading('#3', text='DESC')
         self.tree.column('#3', minwidth=100, width=600)
         self.tree.heading('#4', text='Stock')
-        self.tree.column('#4', minwidth=30, width=60, anchor='center')
-        self.tree.heading('#5', text='Temp.')
-        self.tree.column('#5', minwidth=30, width=60, anchor='center')
-        self.tree.heading('#6', text='Humid.')
-        self.tree.column('#6', minwidth=30, width=60, anchor='center')
+        self.tree.column('#4', minwidth=30, width=80, anchor='center')
+        self.tree.heading('#5', text='Temp (Min)')
+        self.tree.column('#5', minwidth=30, width=80, anchor='center')
+        self.tree.heading('#6', text='Temp (Max)')
+        self.tree.column('#6', minwidth=30, width=80, anchor='center')
+        self.tree.heading('#7', text='Humid (Min)')
+        self.tree.column('#7', minwidth=30, width=85, anchor='center')
+        self.tree.heading('#8', text='Humid (Max)')
+        self.tree.column('#8', minwidth=30, width=85, anchor='center')
 
         # Obtain current Inventory
         self.df = self.inv_conn.view_plants()
@@ -590,7 +644,7 @@ class User_Interface:
         # Screen Settings/Geometry
         self.win_config = Toplevel(self.window)
         self.win_config.title("Configuration")
-        self.win_config.geometry('300x300')
+        self.win_config.geometry('300x270')
         self.win_config.iconphoto(False, self.icon)
         self.win_config.resizable(False, False)
 
@@ -683,7 +737,7 @@ class User_Interface:
             bg='gray',
             command=self.win_config.destroy,
         )
-        self.adv_btn.grid(row=8, column=0, sticky="NESW", columnspan=2)
+        self.adv_btn.grid(row=8, column=0, sticky="NESW", columnspan=2, pady=5)
 
         self.save_conf_btn = Button(
             self.win_config,
@@ -692,7 +746,7 @@ class User_Interface:
             bg='gray',
             command=self.settings_save_btn,
         )
-        self.save_conf_btn.grid(row=9, column=0, sticky="NESW", columnspan=2)
+        self.save_conf_btn.grid(row=9, column=0, sticky="NESW", columnspan=2, pady=5)
 
     def settings_save_btn(self):
         """
@@ -720,7 +774,3 @@ class User_Interface:
 
         self.win_config.destroy()
         sys.exit()
-
-
-test = User_Interface()
-test.main_window()

@@ -1,10 +1,14 @@
 import time
 import graphic_interface
+import threading
+
+def checks():
+    pass
 
 
 def main():
-    ui = graphic_interface.User_Interface()
-    ui.main_window()
+    UI_Obj = graphic_interface.User_Interface()
+    UI_Obj.main_window()
 
 
 if __name__ == "__main__":
